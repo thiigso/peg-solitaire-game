@@ -1,7 +1,11 @@
 #include <stdio.h>
 
-void initializeMatrix(){
+void InitializeMatrix(){
     
+}
+
+void VerifyEndGame(){
+
 }
 
 
