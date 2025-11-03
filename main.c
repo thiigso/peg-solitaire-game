@@ -7,6 +7,8 @@
 #define FILLED 1
 #define EMPTY 0
 #define OUT -1
+#define OUTBOARD -2
+#define ERROR -3
 
 
 void InitializeGame(int matrix[ROWS][COLUMNS]){
@@ -34,25 +36,63 @@ void VerifyEndGame(){
 
 }
 
-void SelectPiece(int positioRow, int positionColumn){
+int SelectPiece(int position[]){
 
     int key1, key2;
 
 
-    while(_getch() != 13){
+    while(1){
 
         key1 = _getch();
         key2 = _getch();
 
-        if(key1 == 224){
-            if(key1 == 77){
-                if(positionColumn != 0 && positionColumn != 6)
-            }
-        }
-        
-    }
+        //printf("key1 %d - key2 %d\n",key1,key2);
 
-    //getch
+        switch (key2){
+            case 75:  //Left
+                if(position[1] != 0 && position[1] != 6){
+                    position[1]--;
+                    break;
+                }
+                else{
+                    return OUTBOARD;
+                    break;
+                }
+            case 72:  //Up
+                if(position[0] != 0 && position[0] != 6){
+                    position[0]--;
+                    break;
+                }
+                else{
+                    return OUTBOARD;
+                    break;
+                }
+            case 77:  //Right
+                if(position[1] != 0 && position[1] != 6){
+                    position[1]++;
+                    break;
+                }
+                else{
+                    return OUTBOARD;
+                    break;
+                }
+            case 80:  //Down
+                if(position[0] != 0 && position[0] != 6){
+                    position[0]++;
+                    break;
+                }
+                else{
+                    return OUTBOARD;
+                    break;
+                }
+            default:
+                return ERROR;
+        }
+
+        printf(" posrow %d - poscol %d\n",position[0], position[1]);
+
+    }
+    return ERROR;
 
 }
 
@@ -70,15 +110,20 @@ void PrintGame(int matrix[ROWS][COLUMNS]){
 
 int main(){
     
-    int matrix[ROWS][COLUMNS];
-    int temp, temp2;
+    //int matrix[ROWS][COLUMNS];
+    //int temp, temp2;
+    int position[2] = {3,3};
 
     //InitializeGame(matrix);
     //PrintGame(matrix);
 
-    temp = _getch();
-    temp2 = _getch();
-    printf("%d %d",temp, temp2);
+    //temp = _getch();
+    //temp2 = _getch();
+    //printf("%d %d",temp, temp2);
+
+    SelectPiece(position);
+    printf("out posrow %d - poscol %d\n",position[0], position[1]);
+
 
 
     return 0;
