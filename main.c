@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <conio.h>
 
 #define ROWS 7
 #define COLUMNS 7
@@ -33,7 +34,25 @@ void VerifyEndGame(){
 
 }
 
-void MakeMove(){
+void SelectPiece(int positioRow, int positionColumn){
+
+    int key1, key2;
+
+
+    while(_getch() != 13){
+
+        key1 = _getch();
+        key2 = _getch();
+
+        if(key1 == 224){
+            if(key1 == 77){
+                if(positionColumn != 0 && positionColumn != 6)
+            }
+        }
+        
+    }
+
+    //getch
 
 }
 
@@ -52,9 +71,15 @@ void PrintGame(int matrix[ROWS][COLUMNS]){
 int main(){
     
     int matrix[ROWS][COLUMNS];
+    int temp, temp2;
 
-    InitializeGame(matrix);
-    PrintGame(matrix);
+    //InitializeGame(matrix);
+    //PrintGame(matrix);
+
+    temp = _getch();
+    temp2 = _getch();
+    printf("%d %d",temp, temp2);
+
 
     return 0;
 }
