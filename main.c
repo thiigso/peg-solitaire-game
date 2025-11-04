@@ -4,6 +4,7 @@
 #define ROWS 7
 #define COLUMNS 7
 
+#define MOVING 3
 #define SELECTED 2
 #define FILLED 1
 #define EMPTY 0
@@ -33,14 +34,54 @@ void InitializeGame(int matrix[ROWS][COLUMNS]){
     }
 }
 
+void CheckMove(){
+
+}
+
+
 void VerifyEndGame(){
 
 }
 
-int SelectPiece(int position[]){
+
+void PrintGame(int matrix[ROWS][COLUMNS],int position[],int status){
+
+    int backspace=0;
+
+    for(int i=0; i<ROWS; i++){
+        for(int j=0; j<COLUMNS; j++){
+            if(status == MOVING){
+                if(i == position[0] && j == position[1]){
+                    printf("%5c",554);
+                    continue;
+                }
+            }
+            else if(status == EMPTY){
+                if(i == position[0] && j == position[1]){
+                    printf("   ");
+                    printf("\033[1;32;44m %d \033[0m",matrix[i][j]);
+                    backspace=1;
+                    continue;
+                }
+            }
+
+            if(backspace==1){
+                printf("%4d",matrix[i][j]);
+                backspace=0;
+            }
+            else
+                printf("%5d",matrix[i][j]);
+        }
+        backspace=0;
+        printf("\n\n");
+    }
+
+}
+
+int SelectPiece(int matrix[ROWS][COLUMNS], int position[], int status){
 
     int key1, key2;
-
+    PrintGame(matrix,position,status);
 
     do{
         key1 = _getch();
@@ -48,74 +89,69 @@ int SelectPiece(int position[]){
         printf("key1 %d \n",key1);
 
         if(key1 == 13){
-            return 2;
+            if(status == MOVING){
+                CheckMove;
+            }
+            return SELECTED;
         }
         else if(key1 == 224){
             switch (key2 = _getch()){
                 case 75:  //Left
-                    if(position[1] != 0 && position[1] != 6){
-                        position[1]--;
-                        break;
+                    position[1]--;
+                    if(position[1] == -1){
+                        position[1]++;
+                        return OUTBOARD;
                     }
                     else{
-                        return OUTBOARD;
+                        PrintGame(matrix,position,status);
                         break;
                     }
                 case 72:  //Up
-                    if(position[0] != 0 && position[0] != 6){
-                        position[0]--;
-                        break;
+                    position[0]--;
+                    if(position[0] ==-1){
+                        position[0]++;
+                        return OUTBOARD;
                     }
                     else{
-                        return OUTBOARD;
+                        PrintGame(matrix,position,status);
                         break;
                     }
                 case 77:  //Right
-                    if(position[1] != 0 && position[1] != 6){
-                        position[1]++;
-                        break;
+                    position[1]++;
+                    if(position[1] == 7){
+                        position[1]--;
+                        return OUTBOARD;
                     }
                     else{
-                        return OUTBOARD;
+                        PrintGame(matrix,position,status);
                         break;
                     }
                 case 80:  //Down
-                    if(position[0] != 0 && position[0] != 6){
-                        position[0]++;
-                        break;
+                    position[0]++;
+                    if(position[0] == 7){
+                        position[0]--;
+                        return OUTBOARD;
                     }
                     else{
-                        return OUTBOARD;
+                        PrintGame(matrix,position,status);
                         break;
                     }
                 default:
                     return ERROR;
             }
         
-        printf(" posrow %d - poscol %d\n",position[0], position[1]);
+        printf(" posrow %d - poscol %d - status %d\n",position[0], position[1],status);
         }
+        else
+            printf("entrou else\n");
 
     }while(key1 == 224);
     
-
+    printf("gone to error - status %d\n",status);
     return ERROR;
 
 }
 
-void PrintGame(int matrix[ROWS][COLUMNS],int position[]){
-
-    for(int i=0; i<ROWS; i++){
-        for(int j=0; j<COLUMNS; j++){
-            if(i == position[0] && j == position[1]){
-                printf("%5c",554);
-                continue;
-            }
-            printf("%5d",matrix[i][j]);
-        }
-        printf("\n\n");
-    }
-
-}
 
 
 int main(){
@@ -124,14 +160,27 @@ int main(){
     int position[2] = {3,3}, status;
 
     InitializeGame(matrix);
-    PrintGame(matrix,position);
+    //PrintGame(matrix,position,SelectPiece(matrix,position,EMPTY));
+    do{
+        status = SelectPiece(matrix,position,EMPTY);
+        
+        if(status == OUTBOARD){
+            PrintGame(matrix,position,OUTBOARD);
+            status = EMPTY;
+        }
+        if(status == SELECTED)
+            if(matrix[position[0]][position[1]] == FILLED){
+                status = MOVING;
+                SelectPiece(matrix,position,MOVING);
+            }
+            
+
+    }while(1);
+
+    printf("\n\nreturn - %d\n",SelectPiece(matrix,position,EMPTY));
 
 
-    status = SelectPiece(position);
-    printf("%d",status);
 
-    if(status == SELECTED)
-        printf("Available to check\n");
     printf("out posrow %d - poscol %d\n",position[0], position[1]);
 
 
