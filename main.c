@@ -4,6 +4,7 @@
 #define ROWS 7
 #define COLUMNS 7
 
+#define SELECTED 2
 #define FILLED 1
 #define EMPTY 0
 #define OUT -1
@@ -41,68 +42,77 @@ int SelectPiece(int position[]){
     int key1, key2;
 
 
-    while(1){
-
+    do{
         key1 = _getch();
-        key2 = _getch();
 
-        //printf("key1 %d - key2 %d\n",key1,key2);
+        printf("key1 %d \n",key1);
 
-        switch (key2){
-            case 75:  //Left
-                if(position[1] != 0 && position[1] != 6){
-                    position[1]--;
-                    break;
-                }
-                else{
-                    return OUTBOARD;
-                    break;
-                }
-            case 72:  //Up
-                if(position[0] != 0 && position[0] != 6){
-                    position[0]--;
-                    break;
-                }
-                else{
-                    return OUTBOARD;
-                    break;
-                }
-            case 77:  //Right
-                if(position[1] != 0 && position[1] != 6){
-                    position[1]++;
-                    break;
-                }
-                else{
-                    return OUTBOARD;
-                    break;
-                }
-            case 80:  //Down
-                if(position[0] != 0 && position[0] != 6){
-                    position[0]++;
-                    break;
-                }
-                else{
-                    return OUTBOARD;
-                    break;
-                }
-            default:
-                return ERROR;
+        if(key1 == 13){
+            return 2;
+        }
+        else if(key1 == 224){
+            switch (key2 = _getch()){
+                case 75:  //Left
+                    if(position[1] != 0 && position[1] != 6){
+                        position[1]--;
+                        break;
+                    }
+                    else{
+                        return OUTBOARD;
+                        break;
+                    }
+                case 72:  //Up
+                    if(position[0] != 0 && position[0] != 6){
+                        position[0]--;
+                        break;
+                    }
+                    else{
+                        return OUTBOARD;
+                        break;
+                    }
+                case 77:  //Right
+                    if(position[1] != 0 && position[1] != 6){
+                        position[1]++;
+                        break;
+                    }
+                    else{
+                        return OUTBOARD;
+                        break;
+                    }
+                case 80:  //Down
+                    if(position[0] != 0 && position[0] != 6){
+                        position[0]++;
+                        break;
+                    }
+                    else{
+                        return OUTBOARD;
+                        break;
+                    }
+                default:
+                    return ERROR;
+            }
+        
+        printf(" posrow %d - poscol %d\n",position[0], position[1]);
         }
 
-        printf(" posrow %d - poscol %d\n",position[0], position[1]);
+    }while(key1 == 224);
+    
 
-    }
     return ERROR;
 
 }
 
-void PrintGame(int matrix[ROWS][COLUMNS]){
+void PrintGame(int matrix[ROWS][COLUMNS],int position[]){
 
     for(int i=0; i<ROWS; i++){
         for(int j=0; j<COLUMNS; j++){
-            printf("%3d",matrix[i][j]);
+            if(i == position[0] && j == position[1]){
+                printf("%5c",554);
+                continue;
+            }
+            printf("%5d",matrix[i][j]);
         }
-        printf("\n");
+        printf("\n\n");
     }
 
 }
@@ -110,18 +120,18 @@ void PrintGame(int matrix[ROWS][COLUMNS]){
 
 int main(){
     
-    //int matrix[ROWS][COLUMNS];
-    //int temp, temp2;
-    int position[2] = {3,3};
+    int matrix[ROWS][COLUMNS];
+    int position[2] = {3,3}, status;
 
-    //InitializeGame(matrix);
-    //PrintGame(matrix);
+    InitializeGame(matrix);
+    PrintGame(matrix,position);
 
-    //temp = _getch();
-    //temp2 = _getch();
-    //printf("%d %d",temp, temp2);
 
-    SelectPiece(position);
+    status = SelectPiece(position);
+    printf("%d",status);
+
+    if(status == SELECTED)
+        printf("Available to check\n");
     printf("out posrow %d - poscol %d\n",position[0], position[1]);
 
 
