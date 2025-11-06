@@ -14,7 +14,7 @@
 #define OUTBOARD -2
 #define ERROR -3
 #define MOVINGERROR -4
-#define LOOSE -100
+#define LOSE -100
 
 int CustomAbs(int n){          //Função que retorna o modulo de um numero
     if(n <0)
@@ -101,9 +101,9 @@ int VerifyEndGame(int matrix[ROWS][COLUMNS]){      //Função que verifica se o 
         return WIN;
     else{
         if((possibleMovesOuter+possibleMovesInner) == 0)                  //Define qual o tipo de GAME OVER o jogador teve
-            return LOOSE;
+            return LOSE;
         if(possibleMovesInner == 0 && completeLine !=0)
-            return LOOSE;
+            return LOSE;
         return RESET;
     }
 }
@@ -217,7 +217,7 @@ int CheckMove(int matrix[ROWS][COLUMNS], int positionSelected[], int position[])
                     }
             }
         }
-        return VerifyEndGame(matrix);          //Verifica se o Jogo terminou e Retorna WIN/LOOSE && Retorna RESET se: [Completou Jogada, Tentou colocar peça num espaço vazio]                 
+        return VerifyEndGame(matrix);          //Verifica se o Jogo terminou e Retorna WIN/LOSE && Retorna RESET se: [Completou Jogada, Tentou colocar peça num espaço vazio]                 
     }
 }
 
@@ -241,8 +241,8 @@ int SelectPiece(int matrix[ROWS][COLUMNS], int position[], int status){        /
                     return RESET;                                             
                 if(status == WIN)
                     return WIN;
-                if(status == LOOSE)
-                    return LOOSE;
+                if(status == LOSE)
+                    return LOSE;
                 continue;
             }
             else
@@ -303,15 +303,15 @@ int SelectPiece(int matrix[ROWS][COLUMNS], int position[], int status){        /
 
 int main(){
     
-    int matrix[ROWS][COLUMNS];
+    //int matrix[ROWS][COLUMNS];
     int position[2] = {3,3}, status;
 
-    //int matrix[7][7] = {{-1,-1,1,1,0,-1,-1},{-1,-1,0,0,0,-1,-1},{0,0,0,0,0,0,0},{0,0,0,0,0,0,0},{0,0,0,0,0,0,0},{-1,-1,0,0,0,-1,-1},{-1,-1,1,0,0,-1,-1}};
     //int matrix[7][7] = {{-1,-1,0,0,0,-1,-1},{-1,-1,0,0,0,-1,-1},{0,0,0,0,0,0,0},{0,0,1,1,0,0,0},{0,0,0,0,0,0,0},{-1,-1,0,0,0,-1,-1},{-1,-1,0,0,0,-1,-1}};
+    int matrix[7][7] = {{-1,-1,1,1,0,-1,-1},{-1,-1,0,0,0,-1,-1},{0,0,0,0,0,0,0},{0,0,0,0,0,0,0},{0,0,0,0,0,0,0},{-1,-1,0,0,0,-1,-1},{-1,-1,1,0,0,-1,-1}};
     //int matrix[7][7] = {{-1,-1,0,0,0,-1,-1},{-1,-1,0,0,0,-1,-1},{1,0,0,0,0,0,0},{1,0,0,0,0,0,0},{1,0,0,1,1,0,1},{-1,-1,0,0,0,-1,-1},{-1,-1,1,0,0,-1,-1}};       //Teste para casos específicos de ganhar e perder no Resta Um.
     //int matrix[7][7] = {{-1,-1,0,1,1,-1,-1},{-1,-1,0,0,0,-1,-1},{1,0,0,0,0,0,1},{1,0,0,0,0,0,0},{1,0,1,0,0,0,0},{-1,-1,0,0,1,-1,-1},{-1,-1,0,1,0,-1,-1}};       //Para-se utilizar esses casos, deve-se comentar:
     //int matrix[7][7] = {{-1,-1,1,1,1,-1,-1},{-1,-1,0,0,0,-1,-1},{1,1,0,0,0,0,1},{0,0,0,0,0,0,0},{0,0,0,0,0,0,1},{-1,-1,1,0,0,-1,-1},{-1,-1,0,0,0,-1,-1}};       //FunçãoInitializeGame(matrix) linha 324   &&  Declaração da matriz[ROWS][COLUMS] linhas 306
-
+ 
     do{                    //Loop Inicial para começo do Jogo
         char answer;
 
@@ -321,7 +321,7 @@ int main(){
         if(answer == 's' || answer =='S'){
             while(getchar() != '\n');
 
-            InitializeGame(matrix);
+            //InitializeGame(matrix);
             position[0]=3; position[1]=3;    //Inicializa o Jogo
 
             do{
@@ -341,19 +341,19 @@ int main(){
                             printf("\n\n Voce ganhou o jogo!\n");
                             break;
                         }
-                        if(status == LOOSE){
-                            PrintGame(matrix,position,LOOSE);                         //Se o jogador perde o jogo
+                        if(status == LOSE){
+                            PrintGame(matrix,position,LOSE);                         //Se o jogador perde o jogo
                             printf("\n\n Voce perdeu o jogo!\n");
                             break;
                         }
                     } 
-            }while(status != LOOSE);
+            }while(status != LOSE);
         }
         if(answer =='n' || answer == 'N'){
             printf("\nOk, o jogo nao ira comecar. Ate logo!");
             break;
         }
-        if(status == LOOSE){
+        if(status == LOSE){
             do{                                                                         //Loop apos perder para se quiser continuar de novo
                 char answerRepeat;
                 printf("\nVoce deseja jogar de novo? (s/n) ");
