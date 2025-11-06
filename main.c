@@ -4,6 +4,7 @@
 #define ROWS 7
 #define COLUMNS 7
 
+#define WIN 100
 #define RESET 10
 #define MOVING 3
 #define SELECTED 2
@@ -13,7 +14,7 @@
 #define OUTBOARD -2
 #define ERROR -3
 #define MOVINGERROR -4
-
+#define LOOSE -100
 
 int CustomAbs(int n){
     if(n <0)
@@ -22,31 +23,63 @@ int CustomAbs(int n){
 }
 
 void InitializeGame(int matrix[ROWS][COLUMNS]){
-
     for(int i=0; i<ROWS; i++){
         for(int j=0; j<COLUMNS; j++){
-
             matrix[i][j] = FILLED;
-
             if(i==0 || i==1 || i==5 || i==6){
-                if(j==0 || j==1 || j==5 || j==6){
+                if(j==0 || j==1 || j==5 || j==6)
                     matrix[i][j] = OUT;
-                }
             }
             else if(i==3 && j==3){
                 matrix[i][j] = EMPTY;
-                
             }
-
         }
     }
 }
 
-
-
-
-void VerifyEndGame(){
-
+int VerifyEndGame(int matrix[ROWS][COLUMNS]){
+    int piecesCount=0, possibleMoves=0;
+    for(int i=0; i<ROWS; i++){ 
+        for(int j=0; j<COLUMNS; j++){
+            if(matrix[i][j] == 1){
+                piecesCount++;
+                if(i==0){
+                    if(matrix[i][j-1] == 1 || matrix[i][j+1] == 1 || matrix[i+1][j] == 1){
+                        possibleMoves++;
+                        continue;
+                    }
+                }
+                if(i==7){
+                    if(matrix[i][j-1] == 1 || matrix[i][j+1] == 1 || matrix[i-1][j] == 1){
+                        possibleMoves++;
+                        continue;
+                    }
+                }
+                if(j==0){
+                    if(matrix[i-1][j] == 1 || matrix[i+1][j] == 1 || matrix[i][j+1] == 1){
+                        possibleMoves++;
+                        continue;
+                    }
+                }
+                if(j==7){
+                    if(matrix[i-1][j] == 1 || matrix[i+1][j] == 1 || matrix[i][j-1] == 1){
+                        possibleMoves++;
+                        continue;
+                    }
+                }
+                if(matrix[i-1][j] == 1 || matrix[i+1][j] == 1 || matrix[i][j-1] == 1 || matrix[i][j+1] == 1){
+                    possibleMoves++;
+                }
+            }
+        }
+    }
+    if(piecesCount == 1)
+        return WIN;
+    else{
+        if(possibleMoves == 0)
+            return LOOSE;
+        return RESET;
+    }
 }
 
 
@@ -95,46 +128,63 @@ void PrintGame(int matrix[ROWS][COLUMNS],int position[],int status){
 
 int CheckMove(int matrix[ROWS][COLUMNS], int positionSelected[], int position[]){
 
-    int diffrow = (position[0]-positionSelected[0]), diffcol = (position[1]-positionSelected[1]);
+    int diffRow = (position[0]-positionSelected[0]), diffCol = (position[1]-positionSelected[1]);
+    int posRow = position[0], posCol = position[1], posSelRow = positionSelected[0], posSelCol = positionSelected[1];
+    printf("posRow: %d - posCol %d - posSelRow %d - posSelCol %d\n",posRow,posCol,posSelRow,posSelCol);
 
 
-    if(matrix[position[0]][position[1]] != 0){
+    if(matrix[posRow][posCol] != 0){
         PrintGame(matrix,position,MOVINGERROR);
         return MOVING;
     }
     else{
-
-        if(position[0] == positionSelected[0]){
-            if((CustomAbs(diffcol)) == 2){
-                printf("Entrou no CheckMove 2\n");
-                matrix[position[0]][position[1]] = 1;
-                matrix[positionSelected[0]][positionSelected[1]] = 0;
-                if(diffcol>0)
-                    matrix[position[0]][position[1]-1] = 0;
+        if(posRow == posSelRow){
+            if((CustomAbs(diffCol)) == 2){
+                printf("Entrou no CheckMove 1 diffCol %d\n",diffCol);
+                if(diffCol>0)
+                    if(matrix[posRow][posCol-1] == 1){
+                        matrix[posRow][posCol] = 1;
+                        matrix[posSelRow][posSelCol] = 0;                  //Come a pecinha
+                        matrix[posRow][posCol-1] = 0;
+                    }
+                    else
+                        return RESET;                                      //Reseta se nao passar por cima de nada
                 else
-                    matrix[position[0]][position[1]+1] = 0;    
-
-                PrintGame(matrix,position,EMPTY);
-                return RESET;
+                    if(matrix[posRow][posCol+1] == 1){
+                        matrix[posRow][posCol+1] = 0;
+                        matrix[posSelRow][posSelCol] = 0;
+                        matrix[posRow][posCol] = 1;
+                    }
+                    else
+                        return RESET;                                              
             }
         }
-        if(position[1] == positionSelected[1]){
-            if((CustomAbs(diffrow)) == 2){
-                printf("Entrou no CheckMove 2\n");
-                matrix[position[0]][position[1]] = 1;
-                matrix[positionSelected[0]][positionSelected[1]] = 0;
-                if(diffrow>0)                                 //Come a pecinha
-                    matrix[position[0]-1][position[1]] = 0;
+        if(posCol == posSelCol){
+            if((CustomAbs(diffRow)) == 2){
+                printf("Entrou no CheckMove 2 diffrow %d\n",diffRow);
+                if(diffRow>0)
+                    if(matrix[posRow-1][posCol] == 1){
+                        matrix[posRow][posCol] = 1;
+                        matrix[posSelRow][posSelCol] = 0;                                 
+                        matrix[posRow-1][posCol] = 0;
+                    }
+                    else{
+                        return RESET;                     
+                    }
                 else
-                    matrix[position[0]+1][position[1]] = 0;
-                PrintGame(matrix,position,EMPTY);
-                return RESET;
+                    if(matrix[posRow+1][posCol] == 1){
+                        matrix[posRow+1][posCol] = 0;
+                        matrix[posSelRow][posSelCol] = 0;
+                        matrix[posRow][posCol] = 1;
+                    }
+                    else{
+                        return RESET;                        
+                    }
             }
-
         }
-
-        return RESET;                 //Se eu selecionei e tentei jogar num espaco vazio que nao podia, eu reseto aqui
-
+        if(VerifyEndGame(matrix)){ // precisa desse if? !!!!!!!!!!!!!!!!!!!!
+            return VerifyEndGame(matrix);    //Verifica se o Jogo terminou e Retorna WIN/LOOSE && Retorna RESET se: [Completou Jogada, Tentou colocar peça num espaço vazio]
+        }                 
     }
 }
 
@@ -160,6 +210,10 @@ int SelectPiece(int matrix[ROWS][COLUMNS], int position[], int status){
                 status = CheckMove(matrix, positionSelected, position);
                 if(status == RESET)
                     return RESET;  // esse retorno nao salva em lugar nenhum, e so para saber que eu estou resetando
+                if(status == WIN)
+                    return WIN;
+                if(status == LOOSE)
+                    return LOOSE;
                 printf("Status after CheckMove %d - SelectPiece\n",status);
                 continue;
             }
@@ -232,9 +286,12 @@ int main(){
     int position[2] = {3,3}, status;
 
     InitializeGame(matrix);
+    //int matrix[7][7] = {{-1,-1,1,1,0,-1,-1},{-1,-1,0,0,0,-1,-1},{0,0,0,0,0,0,0},{0,0,0,0,0,0,0},{0,0,0,0,0,0,0},{-1,-1,0,0,0,-1,-1},{-1,-1,1,0,0,-1,-1}};
+    //int matrix[7][7] = {{-1,-1,0,0,0,-1,-1},{-1,-1,0,0,0,-1,-1},{0,0,0,0,0,0,0},{0,0,1,1,0,0,0},{0,0,0,0,0,0,0},{-1,-1,0,0,0,-1,-1},{-1,-1,0,0,0,-1,-1}};
     //PrintGame(matrix,position,SelectPiece(matrix,position,EMPTY));
     do{
-        printf("printou status matrix\n");
+
+        printf("printou status matrix with status: %d\n",status);
         status = SelectPiece(matrix,position,EMPTY);
         
         if(status == OUTBOARD){
@@ -244,17 +301,22 @@ int main(){
         if(status == SELECTED)
             if(matrix[position[0]][position[1]] == FILLED){
                 status = MOVING;
-                SelectPiece(matrix,position,MOVING);
+                status = SelectPiece(matrix,position,MOVING);
+                if(status == WIN){
+                    PrintGame(matrix,position,WIN);                    
+                    printf("\n\n Voce ganhou o jogo!\n");
+                    break;
+                }
+                if(status == LOOSE){
+                    PrintGame(matrix,position,LOOSE);
+                    printf("\n\n Voce perdeu o jogo!\n");
+                    break;
+                }
             }
+
             
 
     }while(1);
-
-    printf("\n\nreturn - %d\n",SelectPiece(matrix,position,EMPTY));
-
-
-
-    printf("out posrow %d - poscol %d\n",position[0], position[1]);
 
 
 
